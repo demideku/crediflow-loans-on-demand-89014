@@ -1,1 +1,4 @@
 project_id = "iiucnchokaidnuwxdcpl"
+
+[functions.send-loan-notification]
+verify_jwt = false

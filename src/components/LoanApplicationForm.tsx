@@ -133,7 +133,7 @@ const LoanApplicationForm = () => {
         .from('loan-documents')
         .getPublicUrl(salaryFileName);
 
-      const { error } = await supabase.from('loan_applications').insert({
+      const { data: newApplication, error } = await supabase.from('loan_applications').insert({
         user_id: user.id,
         full_name: validatedData.fullName,
         email: validatedData.email,
@@ -151,9 +151,26 @@ const LoanApplicationForm = () => {
         proof_of_identity_url: identityUrl.publicUrl,
         proof_of_salary_url: salaryUrl.publicUrl,
         status: 'pending',
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      // Send confirmation email
+      try {
+        await supabase.functions.invoke('send-loan-notification', {
+          body: {
+            type: 'submission',
+            applicationId: newApplication.id,
+            userEmail: validatedData.email,
+            userName: validatedData.fullName,
+            loanAmount: validatedData.loanAmount,
+            loanType: validatedData.loanType,
+          },
+        });
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+        // Don't fail the application if email fails
+      }
 
       toast({
         title: "Application Submitted Successfully! 🎉",
