@@ -10,7 +10,8 @@ export const useLoanNotifications = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const channel = supabase
+      // Listen for loan status changes
+      const loanChannel = supabase
         .channel('loan-status-changes')
         .on(
           'postgres_changes',
@@ -43,8 +44,32 @@ export const useLoanNotifications = () => {
         )
         .subscribe();
 
+      // Listen for admin notifications
+      const notificationChannel = supabase
+        .channel('user-notifications')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload: any) => {
+            const { title, message, type } = payload.new;
+            
+            toast({
+              title,
+              description: message,
+              variant: type === 'error' ? 'destructive' : undefined,
+            });
+          }
+        )
+        .subscribe();
+
       return () => {
-        supabase.removeChannel(channel);
+        supabase.removeChannel(loanChannel);
+        supabase.removeChannel(notificationChannel);
       };
     };
 
