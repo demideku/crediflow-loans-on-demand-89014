@@ -26,7 +26,11 @@ const loanApplicationSchema = z.object({
   bankName: z.string().min(1, "Bank is required"),
 });
 
-const LoanApplicationForm = () => {
+interface LoanApplicationFormProps {
+  initialBvn?: string;
+}
+
+const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +46,7 @@ const LoanApplicationForm = () => {
     loanPurpose: "",
     employmentStatus: "",
     monthlyIncome: "",
-    bvn: "",
+    bvn: initialBvn,
     accountNumber: "",
     bankName: "",
   });
@@ -429,7 +433,9 @@ const LoanApplicationForm = () => {
                         required
                         maxLength={11}
                         className="h-12"
+                        disabled
                       />
+                      <p className="text-xs text-muted-foreground">✓ Verified</p>
                     </div>
 
                     <div className="space-y-2">
