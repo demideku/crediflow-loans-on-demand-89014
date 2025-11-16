@@ -9,14 +9,16 @@ const LoanCalculator = () => {
   const [term, setTerm] = useState(12);
   const [rate] = useState(15); // Fixed rate for demo (Nigerian rate)
 
-  const calculateMonthlyPayment = () => {
-    const monthlyRate = rate / 100 / 12;
-    const payment = (amount * monthlyRate * Math.pow(1 + monthlyRate, term)) / 
-                   (Math.pow(1 + monthlyRate, term) - 1);
+  const calculateQuarterlyPayment = () => {
+    // Calculate interest per 3 months (quarterly)
+    const quarterlyRate = rate / 100 / 4; // Divide by 4 for quarterly periods
+    const numQuarters = Math.ceil(term / 3); // Convert months to quarters
+    const payment = (amount * quarterlyRate * Math.pow(1 + quarterlyRate, numQuarters)) / 
+                   (Math.pow(1 + quarterlyRate, numQuarters) - 1);
     return payment.toFixed(2);
   };
 
-  const totalPayment = (parseFloat(calculateMonthlyPayment()) * term).toFixed(2);
+  const totalPayment = (parseFloat(calculateQuarterlyPayment()) * Math.ceil(term / 3)).toFixed(2);
   const totalInterest = (parseFloat(totalPayment) - amount).toFixed(2);
 
   return (
@@ -29,10 +31,10 @@ const LoanCalculator = () => {
               <span className="text-sm font-medium text-primary">Loan Calculator</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Calculate Your Monthly Payment
+              Calculate Your Quarterly Payment
             </h2>
             <p className="text-xl text-muted-foreground">
-              Adjust the sliders to see how much you can borrow
+              Adjust the sliders to see your payment every 3 months
             </p>
           </div>
 
@@ -95,8 +97,8 @@ const LoanCalculator = () => {
               {/* Results */}
               <div className="pt-6 border-t space-y-4">
                 <div className="flex justify-between items-center p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl">
-                  <span className="text-lg font-semibold">Monthly Payment</span>
-                  <span className="text-3xl font-bold text-primary">₦{calculateMonthlyPayment()}</span>
+                  <span className="text-lg font-semibold">Payment Every 3 Months</span>
+                  <span className="text-3xl font-bold text-primary">₦{calculateQuarterlyPayment()}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
