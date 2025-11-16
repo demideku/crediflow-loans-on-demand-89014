@@ -56,7 +56,7 @@ const Footer = () => {
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                CrediFlow
+                Nexatech
               </span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
@@ -127,7 +127,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-border text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} CrediFlow. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Nexatech. All rights reserved.</p>
         </div>
       </div>
     </footer>
