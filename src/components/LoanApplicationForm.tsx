@@ -24,6 +24,7 @@ const loanApplicationSchema = z.object({
   bvn: z.string().trim().length(11, "BVN must be 11 digits"),
   accountNumber: z.string().trim().length(10, "Account number must be 10 digits"),
   bankName: z.string().min(1, "Bank is required"),
+  paymentType: z.string().min(1, "Payment type is required"),
 });
 
 interface LoanApplicationFormProps {
@@ -49,6 +50,7 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
     bvn: initialBvn,
     accountNumber: "",
     bankName: "",
+    paymentType: "installment",
   });
   const [proofOfIdentity, setProofOfIdentity] = useState<File | null>(null);
   const [proofOfSalary, setProofOfSalary] = useState<File | null>(null);
@@ -110,6 +112,7 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
         bvn: formData.bvn,
         accountNumber: formData.accountNumber,
         bankName: formData.bankName,
+        paymentType: formData.paymentType,
       });
 
       // Upload proof of identity
@@ -152,6 +155,7 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
         bvn: validatedData.bvn,
         account_number: validatedData.accountNumber,
         bank_name: validatedData.bankName,
+        payment_type: validatedData.paymentType,
         proof_of_identity_url: identityUrl.publicUrl,
         proof_of_salary_url: salaryUrl.publicUrl,
         status: 'pending',
@@ -202,6 +206,7 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
         bvn: "",
         accountNumber: "",
         bankName: "",
+        paymentType: "installment",
       });
       setProofOfIdentity(null);
       setProofOfSalary(null);
@@ -373,6 +378,23 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
                       required
                       className="h-12"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentType">Payment Option</Label>
+                    <Select 
+                      value={formData.paymentType} 
+                      onValueChange={(value) => handleChange("paymentType", value)}
+                      required
+                    >
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Select payment option" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background z-50">
+                        <SelectItem value="installment">Quarterly Installments (Every 3 months)</SelectItem>
+                        <SelectItem value="full">Full Payment (Lump Sum)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
