@@ -120,9 +120,22 @@ const AdminApplications = () => {
       return;
     }
 
+    // Extract the file path from the full URL
+    // URL format: https://.../storage/v1/object/public/loan-documents/{path}
+    const bucketPath = url.split('/loan-documents/')[1];
+    
+    if (!bucketPath) {
+      toast({
+        title: "Error",
+        description: "Invalid document URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const { data, error } = await supabase.storage
       .from('loan-documents')
-      .createSignedUrl(url, 3600); // 1 hour expiry
+      .createSignedUrl(bucketPath, 3600); // 1 hour expiry
 
     if (error || !data) {
       toast({
