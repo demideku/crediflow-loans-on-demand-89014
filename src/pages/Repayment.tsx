@@ -18,6 +18,7 @@ interface LoanApplication {
   status: string;
   created_at: string;
   monthly_income: number;
+  payment_type: string;
 }
 
 interface PaymentSchedule {
@@ -87,6 +88,34 @@ const Repayment = () => {
     const loanAmount = app.loan_amount;
     const quarterlyRate = INTEREST_RATE / 100 / 4; // Quarterly interest rate
     
+    // For full payment, show single payment with total interest
+    if (app.payment_type === 'full') {
+      // Calculate total interest for full repayment
+      // Determine number of months based on loan type
+      let numMonths = 12;
+      if (app.loan_type === 'salary') numMonths = 12;
+      else if (app.loan_type === 'business') numMonths = 24;
+      else if (app.loan_type === 'mortgage') numMonths = 60;
+      
+      const totalInterest = loanAmount * (INTEREST_RATE / 100) * (numMonths / 12);
+      const totalPayment = loanAmount + totalInterest;
+      
+      // Due date is 1 month after application
+      const dueDate = new Date(app.created_at);
+      dueDate.setMonth(dueDate.getMonth() + 1);
+      
+      setSchedule([{
+        period: 1,
+        dueDate: dueDate.toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' }),
+        payment: totalPayment,
+        principal: loanAmount,
+        interest: totalInterest,
+        balance: 0
+      }]);
+      return;
+    }
+    
+    // For installment payment, calculate quarterly schedule
     // Determine number of quarters based on loan type
     let numMonths = 12; // Default
     if (app.loan_type === 'salary') numMonths = 12;
@@ -222,8 +251,16 @@ const Repayment = () => {
                     <p className="font-semibold">{INTEREST_RATE}% per year</p>
                   </div>
                   <div>
+                    <p className="text-sm text-muted-foreground mb-1">Payment Type</p>
+                    <Badge className="capitalize">
+                      {application.payment_type === 'full' ? 'Full Payment (Lump Sum)' : 'Quarterly Installments'}
+                    </Badge>
+                  </div>
+                  <div>
                     <p className="text-sm text-muted-foreground mb-1">Payment Frequency</p>
-                    <p className="font-semibold">Every 3 Months (Quarterly)</p>
+                    <p className="font-semibold">
+                      {application.payment_type === 'full' ? 'One-time Payment' : 'Every 3 Months (Quarterly)'}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Number of Payments</p>
@@ -241,7 +278,9 @@ const Repayment = () => {
                   Payment Schedule
                 </CardTitle>
                 <CardDescription>
-                  Your quarterly payment breakdown
+                  {application.payment_type === 'full' 
+                    ? 'Your one-time payment details' 
+                    : 'Your quarterly payment breakdown'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -286,8 +325,9 @@ const Repayment = () => {
                     <div className="text-sm">
                       <p className="font-semibold mb-1">Payment Information</p>
                       <p className="text-muted-foreground">
-                        Payments are due every 3 months. Each payment includes both principal and interest. 
-                        Your remaining balance decreases with each payment until the loan is fully paid off.
+                        {application.payment_type === 'full' 
+                          ? 'This is a one-time lump sum payment that includes the principal amount plus accrued interest. Payment is due within one month of application approval.'
+                          : 'Payments are due every 3 months. Each payment includes both principal and interest. Your remaining balance decreases with each payment until the loan is fully paid off.'}
                       </p>
                     </div>
                   </div>

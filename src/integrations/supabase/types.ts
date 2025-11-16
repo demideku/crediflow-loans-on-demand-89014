@@ -30,6 +30,7 @@ export type Database = {
           loan_purpose: string
           loan_type: string
           monthly_income: number
+          payment_type: string | null
           phone: string
           proof_of_identity_url: string | null
           proof_of_salary_url: string | null
@@ -52,6 +53,7 @@ export type Database = {
           loan_purpose: string
           loan_type: string
           monthly_income: number
+          payment_type?: string | null
           phone: string
           proof_of_identity_url?: string | null
           proof_of_salary_url?: string | null
@@ -74,6 +76,7 @@ export type Database = {
           loan_purpose?: string
           loan_type?: string
           monthly_income?: number
+          payment_type?: string | null
           phone?: string
           proof_of_identity_url?: string | null
           proof_of_salary_url?: string | null
