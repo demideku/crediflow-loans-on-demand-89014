@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, ArrowLeft, CheckCircle, XCircle, Clock } from "lucide-react";
+import { TrendingUp, ArrowLeft, CheckCircle, XCircle, Clock, FileText, Eye } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -26,6 +26,8 @@ interface LoanApplication {
   monthly_income: number;
   status: string;
   created_at: string;
+  proof_of_identity_url: string | null;
+  proof_of_salary_url: string | null;
 }
 
 const AdminApplications = () => {
@@ -108,6 +110,32 @@ const AdminApplications = () => {
     }
   };
 
+  const viewDocument = async (url: string | null) => {
+    if (!url) {
+      toast({
+        title: "No Document",
+        description: "This document has not been uploaded yet",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data, error } = await supabase.storage
+      .from('loan-documents')
+      .createSignedUrl(url, 3600); // 1 hour expiry
+
+    if (error || !data) {
+      toast({
+        title: "Error",
+        description: "Failed to load document",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    window.open(data.signedUrl, '_blank');
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
@@ -171,6 +199,7 @@ const AdminApplications = () => {
                       <TableHead>Loan Type</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Income</TableHead>
+                      <TableHead>Documents</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Action</TableHead>
@@ -189,6 +218,28 @@ const AdminApplications = () => {
                         <TableCell className="capitalize">{app.loan_type}</TableCell>
                         <TableCell className="font-semibold">₦{app.loan_amount.toLocaleString()}</TableCell>
                         <TableCell>₦{app.monthly_income.toLocaleString()}/mo</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => viewDocument(app.proof_of_identity_url)}
+                              className="gap-1"
+                            >
+                              <FileText className="w-3 h-3" />
+                              ID
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => viewDocument(app.proof_of_salary_url)}
+                              className="gap-1"
+                            >
+                              <Eye className="w-3 h-3" />
+                              Income
+                            </Button>
+                          </div>
+                        </TableCell>
                         <TableCell>{new Date(app.created_at).toLocaleDateString('en-NG')}</TableCell>
                         <TableCell>{getStatusBadge(app.status)}</TableCell>
                         <TableCell>
