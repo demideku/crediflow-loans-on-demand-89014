@@ -56,7 +56,7 @@ const Footer = () => {
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Nexatech
+                Crediflow
               </span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
