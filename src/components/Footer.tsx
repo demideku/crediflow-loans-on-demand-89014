@@ -69,24 +69,24 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About Us
-                </button>
+                </a>
               </li>
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
                   How It Works
-                </button>
+                </a>
               </li>
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/faq" className="text-muted-foreground hover:text-primary transition-colors">
                   FAQ
-                </button>
+                </a>
               </li>
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
                   Contact
-                </button>
+                </a>
               </li>
               {isAdmin && (
                 <li>
@@ -103,24 +103,24 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/terms" className="text-muted-foreground hover:text-primary transition-colors">
                   Terms of Service
-                </button>
+                </a>
               </li>
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
                   Privacy Policy
-                </button>
+                </a>
               </li>
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/cookies" className="text-muted-foreground hover:text-primary transition-colors">
                   Cookie Policy
-                </button>
+                </a>
               </li>
               <li>
-                <button className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="/compliance" className="text-muted-foreground hover:text-primary transition-colors">
                   Compliance
-                </button>
+                </a>
               </li>
             </ul>
           </div>

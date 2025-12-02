@@ -14,6 +14,13 @@ import AdminPayments from "./pages/AdminPayments";
 import Calculator from "./pages/Calculator";
 import Apply from "./pages/Apply";
 import About from "./pages/About";
+import HowItWorks from "./pages/HowItWorks";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Cookies from "./pages/Cookies";
+import Compliance from "./pages/Compliance";
 import MyApplications from "./pages/MyApplications";
 import Repayment from "./pages/Repayment";
 import Notifications from "./pages/Notifications";
@@ -33,6 +40,13 @@ const AppContent = () => {
         <Route path="/calculator" element={<Calculator />} />
         <Route path="/apply" element={<Apply />} />
         <Route path="/about" element={<About />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/compliance" element={<Compliance />} />
         <Route path="/my-applications" element={<MyApplications />} />
         <Route path="/repayment/:id" element={<Repayment />} />
         <Route path="/notifications" element={<Notifications />} />
