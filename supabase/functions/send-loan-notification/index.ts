@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@4.0.0";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -8,15 +9,30 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface NotificationRequest {
-  type: 'submission' | 'status_update';
-  applicationId: string;
-  userEmail: string;
-  userName: string;
-  loanAmount: number;
-  loanType: string;
-  status?: string;
-}
+// Input validation schema
+const notificationSchema = z.object({
+  type: z.enum(['submission', 'status_update']),
+  applicationId: z.string().uuid(),
+  userEmail: z.string().email().max(255),
+  userName: z.string().max(100).regex(/^[a-zA-Z\s\-']+$/, "Invalid name format"),
+  loanAmount: z.number().positive().max(10000000),
+  loanType: z.string().max(50),
+  status: z.enum(['approved', 'rejected', 'pending']).optional(),
+});
+
+type NotificationRequest = z.infer<typeof notificationSchema>;
+
+// HTML escape helper to prevent injection
+const escapeHtml = (str: string): string => {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return str.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+};
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -34,7 +50,24 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { type, applicationId, userEmail, userName, loanAmount, loanType, status }: NotificationRequest = await req.json();
+    const rawData = await req.json();
+    
+    // Validate and sanitize input
+    const validationResult = notificationSchema.safeParse(rawData);
+    if (!validationResult.success) {
+      console.error("Validation error:", validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ error: "Invalid input data", details: validationResult.error.errors }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    
+    const { type, applicationId, userEmail, userName, loanAmount, loanType, status } = validationResult.data;
+    
+    // Escape HTML for safe email content
+    const safeUserName = escapeHtml(userName);
+    const safeLoanType = escapeHtml(loanType);
+    const safeApplicationId = escapeHtml(applicationId);
 
     let subject: string;
     let html: string;
@@ -44,13 +77,13 @@ const handler = async (req: Request): Promise<Response> => {
       html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #2563eb;">Application Received!</h1>
-          <p>Dear ${userName},</p>
+          <p>Dear ${safeUserName},</p>
           <p>Thank you for submitting your loan application with CrediFlow.</p>
           
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h2 style="margin-top: 0;">Application Details</h2>
-            <p><strong>Application ID:</strong> ${applicationId}</p>
-            <p><strong>Loan Type:</strong> ${loanType}</p>
+            <p><strong>Application ID:</strong> ${safeApplicationId}</p>
+            <p><strong>Loan Type:</strong> ${safeLoanType}</p>
             <p><strong>Amount:</strong> ₦${loanAmount.toLocaleString()}</p>
             <p><strong>Status:</strong> Pending Review</p>
           </div>
@@ -69,13 +102,13 @@ const handler = async (req: Request): Promise<Response> => {
       html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: ${statusColor};">Application ${statusText}</h1>
-          <p>Dear ${userName},</p>
+          <p>Dear ${safeUserName},</p>
           <p>Your loan application status has been updated.</p>
           
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h2 style="margin-top: 0;">Application Details</h2>
-            <p><strong>Application ID:</strong> ${applicationId}</p>
-            <p><strong>Loan Type:</strong> ${loanType}</p>
+            <p><strong>Application ID:</strong> ${safeApplicationId}</p>
+            <p><strong>Loan Type:</strong> ${safeLoanType}</p>
             <p><strong>Amount:</strong> ₦${loanAmount.toLocaleString()}</p>
             <p><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span></p>
           </div>

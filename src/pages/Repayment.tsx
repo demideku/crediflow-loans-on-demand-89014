@@ -131,7 +131,7 @@ const Repayment = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      let proofUrl = null;
+      let proofFilePath = null;
       if (paymentProof) {
         const fileExt = paymentProof.name.split('.').pop();
         const filePath = `${user.id}/${Date.now()}.${fileExt}`;
@@ -142,18 +142,15 @@ const Repayment = () => {
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('loan-documents')
-          .getPublicUrl(filePath);
-
-        proofUrl = publicUrl;
+        // Store file path (not public URL) - signed URLs will be generated on-demand for viewing
+        proofFilePath = filePath;
       }
 
       const { error } = await supabase.from("payments").insert({
         loan_application_id: id,
         user_id: user.id,
         amount_paid: parseFloat(amountPaid),
-        payment_proof_url: proofUrl,
+        payment_proof_url: proofFilePath,
       });
 
       if (error) throw error;

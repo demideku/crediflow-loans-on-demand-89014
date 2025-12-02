@@ -131,15 +131,7 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
 
       if (salaryUploadError) throw salaryUploadError;
 
-      // Get public URLs for the uploaded files
-      const { data: identityUrl } = supabase.storage
-        .from('loan-documents')
-        .getPublicUrl(identityFileName);
-
-      const { data: salaryUrl } = supabase.storage
-        .from('loan-documents')
-        .getPublicUrl(salaryFileName);
-
+      // Store file paths (not public URLs) - signed URLs will be generated on-demand for viewing
       const { data: newApplication, error } = await supabase.from('loan_applications').insert({
         user_id: user.id,
         full_name: validatedData.fullName,
@@ -156,8 +148,8 @@ const LoanApplicationForm = ({ initialBvn = "" }: LoanApplicationFormProps) => {
         account_number: validatedData.accountNumber,
         bank_name: validatedData.bankName,
         payment_type: validatedData.paymentType,
-        proof_of_identity_url: identityUrl.publicUrl,
-        proof_of_salary_url: salaryUrl.publicUrl,
+        proof_of_identity_url: identityFileName,
+        proof_of_salary_url: salaryFileName,
         status: 'pending',
       }).select().single();
 
