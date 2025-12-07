@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { CheckCircle, XCircle, ExternalLink, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { CheckCircle, XCircle, ExternalLink, ArrowLeft, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AdminPayments = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: payments, isLoading } = useQuery({
     queryKey: ["admin-payments"],
@@ -61,11 +62,27 @@ const AdminPayments = () => {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <Link to="/admin" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Dashboard
-      </Link>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <nav className="bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                CrediFlow Admin
+              </span>
+            </div>
+            <Button variant="outline" onClick={() => navigate('/admin')}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader>
           <CardTitle>Payment Verification</CardTitle>
@@ -165,6 +182,7 @@ const AdminPayments = () => {
           </Table>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
