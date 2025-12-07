@@ -12,6 +12,7 @@ import AdminReports from "./pages/AdminReports";
 import AdminNotifications from "./pages/AdminNotifications";
 import AdminPayments from "./pages/AdminPayments";
 import AdminLoanDispatch from "./pages/AdminLoanDispatch";
+import AdminRepaymentTracking from "./pages/AdminRepaymentTracking";
 import Calculator from "./pages/Calculator";
 import Apply from "./pages/Apply";
 import About from "./pages/About";
@@ -58,6 +59,7 @@ const AppContent = () => {
         <Route path="/admin/notifications" element={<AdminNotifications />} />
         <Route path="/admin/payments" element={<AdminPayments />} />
         <Route path="/admin/dispatch" element={<AdminLoanDispatch />} />
+        <Route path="/admin/repayments" element={<AdminRepaymentTracking />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

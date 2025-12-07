@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, ArrowLeft, FileText, ClipboardList, BarChart3, Bell, CreditCard, Banknote } from "lucide-react";
+import { TrendingUp, ArrowLeft, FileText, ClipboardList, BarChart3, Bell, CreditCard, Banknote, Receipt } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ const Admin = () => {
         </div>
 
         {/* Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card 
             className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => navigate('/admin/applications')}
@@ -236,6 +236,29 @@ const Admin = () => {
             <CardContent>
               <Button className="w-full">
                 Verify Payments
+                <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate('/admin/repayments')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-lg">
+                  <Receipt className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle>Repayment Tracking</CardTitle>
+                  <CardDescription>Monitor loan repayments</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full">
+                Track Repayments
                 <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
               </Button>
             </CardContent>
